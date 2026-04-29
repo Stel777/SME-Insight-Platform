@@ -3,72 +3,75 @@
 const { useState: useStateB, useEffect: useEffectB, useRef: useRefB } = React;
 
 const NODES = [
-  { id: 'trust',       label: 'Trust',              type: 'theme',   n: 28, x: 0.42, y: 0.42,
-    definition: 'The primary gateway condition for SME engagement. Without it, no offer converts — regardless of price or quality.',
-    synonyms: ['credibility', 'credible', 'confidence', 'reliable', 'believe', 'trusted'] },
-  { id: 'referrals',   label: 'Referrals',          type: 'theme',   n: 22, x: 0.26, y: 0.30,
-    definition: 'The dominant discovery mechanism. SMEs overwhelmingly find external advisors via peer recommendations, accountants, or bank introductions.',
-    synonyms: ['recommendation', 'word of mouth', 'introduced', 'referred', 'network', 'introduce'] },
-  { id: 'cost',        label: 'Cost / ROI',          type: 'theme',   n: 19, x: 0.58, y: 0.60,
-    definition: 'Cost concern reads primarily as scope anxiety, not price sensitivity. SMEs want to know exactly what they are paying for before committing.',
-    synonyms: ['price', 'expensive', 'budget', 'roi', 'return', 'value', 'spend', 'fee', 'afford'] },
-  { id: 'jargon',      label: 'Jargon fatigue',     type: 'theme',   n: 17, x: 0.60, y: 0.26,
-    definition: 'Consulting language ("transformation", "maturity model", "roadmap") actively reduces engagement. SMEs read jargon as a signal they are not the intended audience.',
-    synonyms: ['language', 'complex', 'terminology', 'buzzword', 'complicated', 'technical', 'confusing'] },
-  { id: 'compfat',     label: 'Compliance fatigue', type: 'theme',   n: 15, x: 0.72, y: 0.45,
-    definition: 'Accumulated exhaustion from ongoing regulatory demands. SMEs disengage not because they do not care, but because volume and complexity overwhelms without guidance.',
-    synonyms: ['compliance', 'regulation', 'regulatory', 'rules', 'fatigue', 'overwhelm', 'overload'] },
-  { id: 'speed',       label: 'Speed',              type: 'theme',   n: 11, x: 0.48, y: 0.72,
-    definition: 'SMEs operate with short decision horizons. Long diagnostic or scoping phases are perceived as signs an engagement will be slow and expensive overall.',
-    synonyms: ['fast', 'quick', 'time', 'duration', 'timeline', 'agile', 'rapid', 'slow'] },
-  { id: 'sectorfit',   label: 'Sector fit',         type: 'theme',   n: 13, x: 0.20, y: 0.56,
-    definition: '"Do they understand businesses like mine?" is a pre-qualifying question. Generic offerings fail; sector-specific signals unlock the conversation.',
-    synonyms: ['sector', 'industry', 'relevant', 'specific', 'understand', 'fit', 'experience', 'hospitality', 'retail', 'manufacturing'] },
-  { id: 'digital',     label: 'Digital readiness',  type: 'theme',   n: 10, x: 0.82, y: 0.26,
-    definition: 'Most Greek SMEs recognise a digital gap but lack internal resource and a clear entry point. Broad mandates are ignored; scoped quick wins engage.',
-    synonyms: ['digital', 'technology', 'tech', 'online', 'software', 'automation', 'tools'] },
-  { id: 'b-expensive', label: '"Too expensive"',    type: 'barrier', n: 14, x: 0.14, y: 0.76,
-    definition: 'The most common stated barrier. Often masks scope anxiety rather than actual budget constraint — the antidote is transparent, fixed-fee framing.',
-    synonyms: ['expensive', 'cost too much', 'afford', 'cannot pay', 'budget constraint'] },
-  { id: 'b-notforus',  label: '"Not for us"',       type: 'barrier', n: 9,  x: 0.08, y: 0.40,
-    definition: 'A perception barrier driven by brand association with large corporates. Overcome by sector-specific proof and peer evidence from similarly-sized firms.',
-    synonyms: ['not for us', 'too big', 'large company', 'corporate', 'not relevant', 'not our size'] },
-  { id: 'b-salesfear', label: 'Fear of being sold', type: 'barrier', n: 12, x: 0.38, y: 0.82,
-    definition: 'SMEs are wary of being upsold into long, open-ended engagements. Fear is strongest among those with prior negative consulting experiences.',
-    synonyms: ['sold', 'sales pitch', 'selling', 'upsell', 'pressure', 'pushy', 'pitch'] },
-  { id: 't-bank',      label: 'Bank requirement',  type: 'trigger', n: 10, x: 0.88, y: 0.62,
-    definition: 'Banks requiring compliance, reporting, or advisory conditions before extending credit is a consistent and powerful engagement trigger for SMEs.',
-    synonyms: ['bank', 'banking', 'loan', 'credit', 'required by', 'forced', 'lender'] },
-  { id: 't-reg',       label: 'New regulation',    type: 'trigger', n: 11, x: 0.90, y: 0.40,
-    definition: 'New regulatory obligations (ESG, digital, labour) create urgency-driven entry points — but only when communicated as practical obligations, not abstract policy.',
-    synonyms: ['regulation', 'law', 'legislation', 'new rule', 'regulatory change', 'legal', 'mandate'] },
-  { id: 't-crisis',    label: 'Crisis',            type: 'trigger', n: 6,  x: 0.74, y: 0.80,
-    definition: 'Business crises — operational, financial, or competitive — create reactive demand for advisory support with compressed time horizons.',
-    synonyms: ['crisis', 'emergency', 'urgent', 'problem', 'issue', 'trouble', 'threat'] },
-  { id: 'p-peer',      label: 'Peer endorsement',  type: 'proof',   n: 16, x: 0.18, y: 0.14,
-    definition: 'The most trusted proof signal. A named recommendation from a peer in the same sector and size band removes more risk than any case study or brochure.',
-    synonyms: ['peer', 'endorsement', 'recommendation', 'testimonial', 'colleague', 'fellow'] },
-  { id: 'p-pilot',     label: 'Pilot results',     type: 'proof',   n: 13, x: 0.42, y: 0.10,
-    definition: 'Concrete results from a short, scoped pilot dramatically reduce perceived risk. SMEs respond to "see what we did in 4 weeks" over long case narratives.',
-    synonyms: ['pilot', 'trial', 'test', 'results', 'proof of concept', 'demo', 'example'] },
-  { id: 'p-scope',     label: 'Clear scope/price', type: 'proof',   n: 15, x: 0.62, y: 0.10,
-    definition: 'Transparent, upfront pricing with a fixed scope is itself a trust signal. Ambiguity in scope is perceived as a sales tactic, not flexibility.',
-    synonyms: ['scope', 'fixed fee', 'clear', 'transparent', 'defined', 'proposal', 'quote', 'fixed price'] },
-  { id: 'p-sector',    label: 'Sector expertise',  type: 'proof',   n: 9,  x: 0.82, y: 0.12,
-    definition: 'Demonstrated knowledge of sector-specific dynamics — regulations, seasonal patterns, typical margins — is a prerequisite for credibility with sector-first SMEs.',
-    synonyms: ['sector expertise', 'industry knowledge', 'specialisation', 'niche', 'expert', 'specialist'] },
+  { id: 'trust',          label: 'Communication fit',   type: 'theme',   n: 12, x: 0.42, y: 0.42,
+    definition: 'Communication quality and personal fit are the primary selection criteria — cited across all five interviews. Direct, accessible communication is not a preference; its absence ends the relationship.',
+    synonyms: ['credibility', 'credible', 'communication', 'personal fit', 'reliable', 'trusted', 'accessible', 'direct'] },
+  { id: 'referrals',      label: 'Personal referral',   type: 'theme',   n: 9,  x: 0.26, y: 0.30,
+    definition: 'The only proven entry point into a consulting relationship. Four of five interviewees described discovery through a personally known contact, not through marketing, cold outreach, or brand recognition.',
+    synonyms: ['recommendation', 'word of mouth', 'introduced', 'referred', 'network', 'friend', 'known person', 'personal connection'] },
+  { id: 'sectorfit',      label: 'Sector fit',          type: 'theme',   n: 11, x: 0.20, y: 0.56,
+    definition: '"Do they understand businesses like mine?" is a pre-qualifying question across all five sectors. Generic expertise is rejected. Sector-specific knowledge must be visible before any engagement begins.',
+    synonyms: ['sector', 'industry', 'relevant', 'specific', 'understand', 'fit', 'experience', 'hospitality', 'legal', 'coffee', 'construction'] },
+  { id: 'familyculture',  label: 'Firm identity',       type: 'theme',   n: 7,  x: 0.58, y: 0.60,
+    definition: 'Family business structure and team culture are inseparable from how SMEs evaluate external partners. A firm that treats an SME as just another account is perceived as culturally misaligned — regardless of its capability.',
+    synonyms: ['family business', 'family firm', 'team culture', 'small team', 'values', 'culture', 'identity', 'who we are'] },
+  { id: 'standardized',   label: 'Template rejection',  type: 'theme',   n: 6,  x: 0.60, y: 0.26,
+    definition: 'Standardised, step-by-step advisory approaches are an active disqualifier. Brochures and generic frameworks signal that the provider does not understand the firm — and are rejected immediately.',
+    synonyms: ['brochure', 'template', 'generic', 'standardized', 'one size fits all', 'not personalised', 'methodology', 'framework', 'steps'] },
+  { id: 'isolation',      label: 'SME isolation',       type: 'theme',   n: 5,  x: 0.48, y: 0.72,
+    definition: 'Greek SMEs feel structurally underserved relative to their share of the economy. The perception that large firms focus on large businesses creates both a readiness gap and an emotional barrier to engagement.',
+    synonyms: ['alone', 'on our own', 'underserved', 'ignored', 'not supported', 'feel alone', 'left out', 'not for small firms'] },
+  { id: 'esg',            label: 'ESG spectrum',        type: 'theme',   n: 8,  x: 0.72, y: 0.45,
+    definition: 'ESG engagement spans from zero awareness (construction) to operationally embedded (legal). Where it appears it is externally imposed — bank conditions, regulation, client demand — not values-driven. Legal sector is uniquely ahead.',
+    synonyms: ['esg', 'sustainability', 'green', 'environmental', 'compliance', 'regulation', 'ecological', 'carbon', 'social'] },
+  { id: 'channels',       label: 'Discovery channels',  type: 'theme',   n: 9,  x: 0.82, y: 0.26,
+    definition: 'Trade exhibitions dominate as the primary information channel for four of five sectors. The legal sector is the critical exception — awareness there is built entirely through legal databases, the Bar Association, newsletters, and inter-firm peer networks.',
+    synonyms: ['exhibition', 'trade fair', 'sector event', 'bar association', 'legal database', 'newsletter', 'how to find', 'where to look', 'internet'] },
+  { id: 'b-notforus',     label: '"Won\'t understand us"', type: 'barrier', n: 5,  x: 0.08, y: 0.40,
+    definition: 'The clearest large-firm perception barrier in the dataset. The fear that a large advisory firm cannot understand the work ethics of a small niche firm is not abstract — it is the stated reason a boss has not yet engaged a management consultant.',
+    synonyms: ['not for us', 'too big', 'large company', 'corporate', 'not relevant', 'won\'t understand', 'not our size', 'niche firm'] },
+  { id: 'b-confidential', label: 'Confidentiality risk', type: 'barrier', n: 3,  x: 0.14, y: 0.76,
+    definition: 'Specific to the legal sector: confidentiality risk is a structural barrier to expanding the team and to engaging external advisors. High-value governmental and investor clients create an asymmetry where external engagement carries real reputational risk.',
+    synonyms: ['confidential', 'confidentiality', 'sensitive', 'private clients', 'data security', 'discretion', 'keep it private', 'sensitive information'] },
+  { id: 'b-salesfear',    label: 'Open-ended fear',     type: 'barrier', n: 4,  x: 0.38, y: 0.82,
+    definition: 'SMEs are wary of being drawn into open-ended engagements with no defined scope or exit. The rejection of brochure-style advisory is partly a defence against this — a bounded, defined offer removes the fear.',
+    synonyms: ['sold', 'sales pitch', 'selling', 'open-ended', 'locked in', 'pressure', 'pushy', 'obligation', 'no exit'] },
+  { id: 't-bank',         label: 'Bank requirement',    type: 'trigger', n: 3,  x: 0.88, y: 0.62,
+    definition: 'Banking and credit conditions that require ESG compliance or sustainability reporting are a concrete engagement trigger — experienced directly by the hotel interviewee when seeking loan approval.',
+    synonyms: ['bank', 'banking', 'loan', 'credit', 'required by', 'lender', 'green loan', 'financing condition'] },
+  { id: 't-reg',          label: 'Regulatory change',   type: 'trigger', n: 5,  x: 0.90, y: 0.40,
+    definition: 'New regulation — ESG mandates, Golden Visa requirements, public procurement green criteria — creates urgency-driven entry points. Most acute in the legal sector where regulatory change directly affects client outcomes.',
+    synonyms: ['regulation', 'law', 'legislation', 'new rule', 'regulatory change', 'mandate', 'golden visa', 'procurement', 'green criteria'] },
+  { id: 't-events',       label: 'Trade exhibitions',   type: 'trigger', n: 7,  x: 0.74, y: 0.80,
+    definition: 'Trade exhibitions and sector events are where four of five interviewees discover products, suppliers, and advisors. For HoReCa specifically, key exhibitions (HoReCa, HOST Italy) are considered must-attend for anyone in the sector.',
+    synonyms: ['exhibition', 'trade fair', 'expo', 'event', 'conference', 'sector gathering', 'horeca', 'trade show'] },
+  { id: 'p-peer',         label: 'Peer endorsement',    type: 'proof',   n: 8,  x: 0.18, y: 0.14,
+    definition: 'The most trusted proof signal across all five interviews. A known person in the same sector recommending an advisor removes more risk than any case study, brochure, or brand credential.',
+    synonyms: ['peer', 'endorsement', 'recommendation', 'testimonial', 'colleague', 'known person', 'same sector', 'introduced by'] },
+  { id: 'p-track',        label: 'Track record',        type: 'proof',   n: 6,  x: 0.42, y: 0.10,
+    definition: 'Evidence of past work with comparable clients is the primary due diligence step. Both the hotel and law firm interviewees described wanting to see what the advisor had done before, and with whom.',
+    synonyms: ['track record', 'former clients', 'past work', 'what have you done', 'experience', 'history', 'previous clients'] },
+  { id: 'p-results',      label: 'Demonstrated results', type: 'proof',  n: 4,  x: 0.62, y: 0.10,
+    definition: 'For Greek SMEs, demonstrated performance outranks stated credentials. The coffee machine distributor articulated this directly: from the moment you deliver results, cost comes second. The market failure is that most SMEs ask about price before asking about outcomes.',
+    synonyms: ['results', 'outcome', 'delivered', 'performance', 'impact', 'what changed', 'proof of value', 'roi'] },
+  { id: 'p-sector',       label: 'Sector expertise',    type: 'proof',   n: 5,  x: 0.82, y: 0.12,
+    definition: 'Sector-specific knowledge demonstrated before the engagement begins — naming the right regulations, understanding the seasonality, knowing the typical pressures — is a prerequisite for credibility, not a differentiator.',
+    synonyms: ['sector expertise', 'industry knowledge', 'specialisation', 'niche', 'expert', 'specialist', 'know our sector'] },
 ];
 
 const EDGES = [
-  ['trust','referrals',18], ['trust','cost',9],    ['trust','sectorfit',11],
-  ['trust','p-peer',14],    ['trust','p-pilot',8],  ['referrals','p-peer',12],
-  ['cost','b-expensive',11],['cost','p-scope',10],  ['cost','speed',6],
-  ['jargon','trust',7],     ['jargon','b-notforus',5],
-  ['compfat','t-reg',9],    ['compfat','t-bank',7], ['compfat','digital',4],
-  ['speed','p-pilot',7],    ['sectorfit','p-sector',8],
-  ['b-salesfear','trust',6],['b-salesfear','p-scope',5],
-  ['b-expensive','p-scope',6],['b-notforus','p-sector',4],
-  ['t-crisis','cost',5],    ['digital','jargon',5],
+  ['trust','referrals',18],         ['trust','sectorfit',10],        ['trust','familyculture',9],
+  ['trust','p-peer',12],            ['trust','p-track',7],
+  ['referrals','p-peer',11],        ['referrals','channels',6],
+  ['sectorfit','standardized',9],   ['sectorfit','p-sector',7],      ['sectorfit','p-track',5],
+  ['familyculture','isolation',5],  ['familyculture','b-notforus',4],
+  ['standardized','b-notforus',6],  ['standardized','b-salesfear',5],
+  ['isolation','b-notforus',7],
+  ['esg','t-reg',8],                ['esg','t-bank',6],
+  ['channels','t-events',9],
+  ['b-confidential','b-notforus',4],
+  ['t-reg','p-sector',4],
+  ['p-results','trust',5],
 ];
 
 const COLORS = {
@@ -80,128 +83,205 @@ const COLORS = {
 
 const QUOTES = {
   trust: [
-    { t: 'Before we signed anything, I called two people I know in the sector. That\'s how we decide.', tags: 'Retail · Small · I-04' },
-    { t: 'We\'ve had bad experiences before. Someone came in, gave us a big report, and nothing happened. So now we need results before we commit properly.', tags: 'Tourism · Small · I-09' },
+    { t: 'Communication is everything. There needs to be a direct communication bridge — as easy and clear as possible.', tags: 'Coffee Machine Company · HoReCa · Interview 2' },
+    { t: 'I don\'t want them to see us as a big client that just needs what they do for everyone. More personal — like family.', tags: 'Boutique Hotel · Hospitality · Interview 4' },
   ],
   referrals: [
-    { t: 'Our accountant mentioned them. That\'s the only reason we opened the door.', tags: 'Manufacturing · Small · I-02' },
-    { t: 'We would never respond to a cold call. But when [peer firm] said they used them — that changed things completely.', tags: 'Services · Micro · I-06' },
-  ],
-  cost: [
-    { t: 'Open-ended scope kills it for us. Just tell me the number.', tags: 'Retail · Micro · I-11' },
-    { t: 'I\'m not against paying — I\'m against not knowing what I\'m paying for.', tags: 'Manufacturing · Small · I-03' },
-  ],
-  jargon: [
-    { t: 'They kept saying "digital maturity". I still don\'t know what that means for my business.', tags: 'Services · Micro · I-08' },
-    { t: 'When they started talking about "transformation journeys" I just switched off. Tell me what changes on Monday morning.', tags: 'Retail · Small · I-12' },
-  ],
-  compfat: [
-    { t: 'We only engaged when our bank asked for it — and even then, we wanted someone who wouldn\'t overcomplicate it.', tags: 'Retail · Small · I-07' },
-    { t: 'Every month there\'s something new. ESG, digital, energy. We can\'t keep up — so we wait until someone tells us we have to act.', tags: 'Tourism · Small · I-05' },
+    { t: 'He\'s a friend. He\'s worked in a coffee company — he knows exactly what goes on in that world.', tags: 'Coffee Machine Company · HoReCa · Interview 2' },
+    { t: 'Someone approached us who we already knew, and we knew what he had done in the sector — so we had trust to take advice from him.', tags: 'Boutique Hotel · Hospitality · Interview 4' },
   ],
   sectorfit: [
-    { t: 'If they haven\'t worked with a hospitality business before, I\'m not interested. Our seasonality alone makes us completely different.', tags: 'Tourism · Small · I-01' },
-    { t: 'The first question I ask is: have you worked with a firm our size, in our sector? If not, we\'re their learning curve.', tags: 'Manufacturing · Medium · I-10' },
+    { t: 'Experience in the sector. Not general experience. Each sector needs a different perspective and different handling of information.', tags: 'Coffee Machine Company · HoReCa · Interview 2' },
+    { t: 'To be able to see how we operate, how we work — because I think that\'s where every result comes from.', tags: 'Boutique Hotel · Hospitality · Interview 4' },
   ],
-  speed: [
-    { t: 'If it takes 3 months to tell me what to do, it will take 12 months to do it. I don\'t have that runway.', tags: 'Services · Micro · I-08' },
+  familyculture: [
+    { t: 'We\'re not a huge company with 100+ staff. Here we\'re all a family who care for each other. We see it very differently.', tags: 'Boutique Hotel · Hospitality · Interview 4' },
+    { t: 'Any good thing that happens in one case, it\'s like it happened because of all of us. This creates a team spirit.', tags: 'Boutique Law Firm · Legal · Interview 5' },
   ],
-  digital: [
-    { t: 'I know we need to do something digital. But I don\'t have someone to run it. So unless it\'s very simple and someone helps us through it, it won\'t happen.', tags: 'Retail · Micro · I-11' },
+  standardized: [
+    { t: 'People who just give you brochures of like 1, 2, 3, 4, 5 steps to follow. It just doesn\'t feel personalised at all.', tags: 'Boutique Law Firm · Legal · Interview 5' },
+    { t: 'Don\'t see us as a big client that just needs what you do for everyone.', tags: 'Boutique Hotel · Hospitality · Interview 4' },
   ],
-  'b-expensive': [
-    { t: 'It\'s not that we can\'t afford it — it\'s that we don\'t know what we\'re buying. That\'s the problem.', tags: 'Manufacturing · Small · I-03' },
+  isolation: [
+    { t: 'Small and medium businesses feel a bit on their own. Greece has this tendency to focus more on large businesses.', tags: 'Boutique Hotel · Hospitality · Interview 4' },
+    { t: 'He fears that a large firm won\'t understand the work ethics of a small niche firm.', tags: 'Boutique Law Firm · Legal · Interview 5' },
+  ],
+  esg: [
+    { t: 'Consulting companies have specific departments for sustainability and ESG. They would be really helpful for us — we\'re neither specialised nor staffed enough for this.', tags: 'Boutique Law Firm · Legal · Interview 5' },
+    { t: 'For some loans we were looking at, they asked us to follow certain green and ecological decisions and practices.', tags: 'Boutique Hotel · Hospitality · Interview 4' },
+  ],
+  channels: [
+    { t: 'I think the biggest part is exhibitions. That\'s the biggest part — and then the internet.', tags: 'Coffee Machine Company · HoReCa · Interview 2' },
+    { t: 'We usually get informed from legal databases, from government announcements, from the Bar Association. We\'ve also subscribed to some legal magazines.', tags: 'Boutique Law Firm · Legal · Interview 5' },
+  ],
+  'b-notforus': [
+    { t: 'He fears that a large firm won\'t understand the work ethics of a small niche legal firm.', tags: 'Boutique Law Firm · Legal · Interview 5' },
+    { t: 'Small and medium businesses feel a bit on their own... Greece focuses more on large businesses.', tags: 'Boutique Hotel · Hospitality · Interview 4' },
+  ],
+  'b-confidential': [
+    { t: 'We have big clients — kind of governmental — so it\'s not easy to expand the team.', tags: 'Boutique Law Firm · Legal · Interview 5' },
   ],
   'b-salesfear': [
-    { t: 'They came in for a "diagnostic" and within 20 minutes were pitching a 6-month project. We politely ended the meeting.', tags: 'Services · Small · I-06' },
+    { t: 'People who just give you brochures of 1, 2, 3, 4, 5 steps to follow. It just doesn\'t feel personalised at all.', tags: 'Boutique Law Firm · Legal · Interview 5' },
   ],
   't-bank': [
-    { t: 'Our bank said we needed to show a sustainability framework before they\'d review our credit line. That\'s when we started looking.', tags: 'Manufacturing · Medium · I-10' },
+    { t: 'For some loans we were looking at, they asked us to follow certain green and ecological decisions and practices.', tags: 'Boutique Hotel · Hospitality · Interview 4' },
   ],
   't-reg': [
-    { t: 'The new CSRD thing — we\'re not even sure it applies to us yet. But our accountant said we should be ready. So we started asking questions.', tags: 'Tourism · Small · I-05' },
+    { t: 'The government reinforces new laws every day regarding sustainability.', tags: 'Boutique Law Firm · Legal · Interview 5' },
+    { t: 'Our international investors are starting to ask about energy efficiency and ESG ratings of real estate portfolios.', tags: 'Boutique Law Firm · Legal · Interview 5' },
+  ],
+  't-events': [
+    { t: 'If you\'re in the HoReCa sector, it\'s a must-go exhibition. I think it\'s the biggest part — and then the internet.', tags: 'Coffee Machine Company · HoReCa · Interview 2' },
   ],
   'p-peer': [
-    { t: 'If someone I respect in the sector has used them and recommends them — that\'s worth more than any brochure.', tags: 'Retail · Small · I-04' },
+    { t: 'We would only choose someone who has been recommended by other firms who share the same mentality as ours.', tags: 'Boutique Law Firm · Legal · Interview 5' },
+    { t: 'Someone approached us who we already knew — and we knew what he\'d done in the sector. That\'s our trust.', tags: 'Boutique Hotel · Hospitality · Interview 4' },
   ],
-  'p-pilot': [
-    { t: 'We said: do 4 weeks, show us results, then we\'ll talk about what comes next. That felt safe.', tags: 'Services · Small · I-06' },
+  'p-track': [
+    { t: 'We want to see what they\'ve done in the past. What clients they had.', tags: 'Boutique Hotel · Hospitality · Interview 4' },
+    { t: 'We would check their former clients.', tags: 'Boutique Law Firm · Legal · Interview 5' },
   ],
-  'p-scope': [
-    { t: 'Two pages. What you\'ll do, what you won\'t do, what it costs, how long. That\'s all I need.', tags: 'Manufacturing · Small · I-02' },
+  'p-results': [
+    { t: 'From the moment you deliver and bring results, cost will always come second.', tags: 'Coffee Machine Company · HoReCa · Interview 2' },
+    { t: 'Most people ask how much it costs first. Not what the result is, or why they need it.', tags: 'Coffee Machine Company · HoReCa · Interview 2' },
+  ],
+  'p-sector': [
+    { t: 'Experience in the sector. Not general experience. Each sector needs a different perspective and different processing of information.', tags: 'Coffee Machine Company · HoReCa · Interview 2' },
   ],
 };
 
 const DEFAULT_RECIPE = {
-  message:  ['Plain language — drop consulting jargon entirely.', 'Outcome-first framing — what changes in 4–6 weeks.', 'Specify scope and fee on page one.'],
-  channels: ['Accountant and bank ecosystem referrals.', 'Sector associations and chamber events.', 'Peer roundtables — 3–5 SMEs, same size band.'],
-  offer:    ['Fixed-fee diagnostic — two weeks, one deliverable.', 'Clinic — 90-minute group session.', 'Staged pilot — diagnostic → 30-day pilot → gate.'],
-  proof:    ['One-page sector micro-case.', 'Named peer endorsement, where permitted.', 'Sample deliverable preview.'],
+  message:  ['Lead with the sector, not the firm — relevance opens doors.', 'Plain operational language — no consulting jargon.', 'State outcomes in 4–6 weeks, not methodology.'],
+  channels: ['Personal introduction via a known sector contact.', 'Sector associations and trade exhibitions.', 'Peer roundtables — 3–5 SMEs, same sector.'],
+  offer:    ['Fixed-fee diagnostic — two weeks, one deliverable.', 'Sector clinic — 90-minute group session.', 'Staged pilot — diagnostic → 30-day pilot → gate.'],
+  proof:    ['One-page sector case with a comparable firm.', 'Named peer endorsement where permitted.', 'Track record of former clients in the same sector.'],
 };
 
 const RECIPES = {
   trust: {
-    message:  ['Lead with outcomes, not process or methodology.', 'Specify scope and fee upfront — on the first page.', 'Avoid "transformation" and "maturity" framing entirely.'],
-    channels: ['Peer and accountant referrals — highest conversion rate.', 'Association-led events with light-touch presence.', 'Sector-specific workshops that signal expertise.'],
-    offer:    ['Fixed-fee diagnostic — 2 weeks, one clear deliverable.', 'Peer clinic — 90 mins, 4–6 SMEs, same size band.', 'Staged pilot — diagnostic → 30-day trial → decision gate.'],
-    proof:    ['One-page sector case study — same sector, similar size.', 'Named peer endorsement where permitted.', 'Sample deliverable: show what you produce, not what you do.'],
+    message:  ['Address communication style before credentials — show you listen.', 'Match the firm\'s register: family business language for family firms, professional for legal.', 'Use operational language, not consulting jargon.'],
+    channels: ['Personal introduction via a known contact — trust transfers from the referrer.', 'Sector events where you meet, not market.', 'Accountant or peer firm referral.'],
+    offer:    ['One defined conversation — no upsell, no scope creep implied.', 'Peer clinic: 4–6 SMEs in the same sector, light-touch presence.', 'Short, bounded diagnostic — fixed scope and outcome.'],
+    proof:    ['Let the referrer speak first — they are the proof.', 'Show how you worked with a similar firm, not what you do in general.', 'One-page outcome summary from a comparable engagement.'],
   },
   referrals: {
-    message:  ['Reference the referral source explicitly in outreach.', 'Use peer language, not corporate language.', '"A firm like yours" framing wherever possible.'],
-    channels: ['Accountant and bank ecosystem — warm introductions.', 'Sector association channels.', 'Peer roundtables — let SMEs introduce each other.'],
-    offer:    ['Peer clinic — let existing clients bring contacts.', 'Association-endorsed diagnostic offer.', 'Referral-activated fixed-fee entry.'],
-    proof:    ['The referrer is the proof — reference the relationship.', 'Sector-specific outcomes visible to the peer network.', 'Named testimonials from within the same sector circle.'],
-  },
-  cost: {
-    message:  ['State the fee and scope on line 1, not page 4.', 'Frame cost as "risk controlled" — not as an investment.', '"Fixed price, fixed scope, fixed timeline" — say all three.'],
-    channels: ['Bank and accountant referrals reduce cost-risk perception.', 'Association-sponsored clinics reduce the perceived cost barrier.'],
-    offer:    ['Fixed-fee diagnostic — the antidote to scope anxiety.', 'Staged payment tied to staged engagement — 30-day gate.', 'No open-ended retainers in early-stage engagement.'],
-    proof:    ['Clear invoice examples — what you get for the fee.', 'Before/after cost impact from similar firms.', 'Explicit "what is NOT included" section in proposals.'],
-  },
-  jargon: {
-    message:  ['Rewrite all materials at "intelligent non-expert" level.', 'Replace "digital transformation" → "improving how you run X".', '"In 4 weeks you will have Y" beats "we will roadmap your journey".'],
-    channels: ['Face-to-face events — jargon is easier to filter in person.', 'Plain-language written follow-ups after any meeting.'],
-    offer:    ['Short-named offers: "Clinic", "Diagnostic", "Sprint" — not "Advisory Engagement".', 'Two-page proposal maximum.'],
-    proof:    ['Plain-language case narrative — what the firm did, not what the advisor did.', 'SME-authored testimonials, unedited.'],
-  },
-  compfat: {
-    message:  ['"You need to know 3 things about this regulation — not 30."', 'Translate regulatory change into operational terms.', 'Acknowledge fatigue first: "We know you\'ve heard a lot about this."'],
-    channels: ['Association briefing events — trusted, not salesy.', 'Accountant / bank trigger activation.', 'Short email briefings — 5 bullets, not 10 pages.'],
-    offer:    ['Compliance readiness check — fixed scope, 2-week turnaround.', '"What this means for you" one-pager before any proposal.', 'Group compliance clinic — shared cost, shared context.'],
-    proof:    ['Plain-language regulation summaries — translated, not forwarded.', '"Already helped 12 firms in your sector with this."', 'Checklist of what is required — concrete, not abstract.'],
+    message:  ['Reference the referral explicitly — it is the entry point.', 'Frame every message as if a trusted peer wrote it.', 'Acknowledge the relationship first, the offer second.'],
+    channels: ['Peer firm and sector association network — highest trust channel.', 'Roundtables where SMEs introduce each other.', 'Law firm networks for the legal sector specifically.'],
+    offer:    ['Referral-activated fixed-fee entry — the referrer lowers the risk.', 'Let existing contacts bring peers to events.', 'Association-endorsed engagement structure.'],
+    proof:    ['The referrer is the proof — their relationship with you is the evidence.', 'Peer-to-peer testimonials within the same sector circle.', 'Named outcomes visible to the referral network.'],
   },
   sectorfit: {
-    message:  ['"We work specifically with hospitality / retail / manufacturing SMEs."', 'Name-drop sector-specific regulations, seasonality, and typical margins.', 'Show you know their cost structure before they tell you.'],
-    channels: ['Sector associations — the credibility endorsement channel.', 'Trade events and chamber events.', 'Sector-specific publications and newsletters.'],
-    offer:    ['Sector diagnostic — industry-benchmarked, not generic.', 'Sector clinic — 90 mins with 4–6 firms from the same sector.', 'Sector case pack — 3 stories from the same industry.'],
-    proof:    ['Sector-specific case studies — same type of firm.', '"We\'ve worked with 8 firms in your sector" is powerful.', 'Sector benchmarking data as a deliverable.'],
+    message:  ['"We work specifically with hospitality / legal / HoReCa SMEs" — say it plainly.', 'Name the sector\'s specific regulations, seasonality, and pressures first.', 'Show you know their cost structure before they tell you.'],
+    channels: ['Sector trade fairs and association events — not generic business events.', 'Sector-specific publications and newsletters.', 'Bar Association and legal databases for the legal sector.'],
+    offer:    ['Sector diagnostic benchmarked against peers in the same industry.', 'Sector clinic — 90 minutes with 4–6 firms from the same sector.', 'Sector case pack: three stories from the same type of firm.'],
+    proof:    ['Case studies from the same sector and firm type.', '"We have worked with hotel groups / law firms / HoReCa businesses like yours."', 'Sector benchmarking data as a tangible deliverable.'],
   },
-  speed: {
-    message:  ['"We\'ll have your first output in 10 business days."', 'Publish a clear timeline on page one of the proposal.', 'Avoid phased engagement language in initial outreach.'],
-    channels: ['Direct introductions — remove as many steps as possible.', 'Short video or one-pager before any meeting request.'],
-    offer:    ['Sprint format — defined start date, defined end date, fixed output.', 'Diagnostic in 2 weeks or less.', 'Group clinic — no long onboarding required.'],
-    proof:    ['Timeline from a similar engagement — specific dates.', '"From intro call to first deliverable: 11 days."', 'Progress update cadence explained upfront.'],
+  familyculture: {
+    message:  ['Acknowledge the family or team dynamic before the business case.', '"A firm like yours" framing — not generic SME language.', 'Avoid corporate register and hierarchy assumptions.'],
+    channels: ['Personal introduction by someone already inside the firm\'s network.', 'Family business associations or hospitality sector events.', 'Direct dialogue — no mass outreach.'],
+    offer:    ['Engagement scoped around the firm\'s own decision-making style.', 'Informal first meeting — relationship before proposal.', 'Flexible delivery that fits a family business calendar.'],
+    proof:    ['Reference a family-owned firm you have worked with.', 'Show results in the same context: 3rd-generation hotel, small professional team.', 'Let the firm describe success before proposing anything.'],
   },
-  digital: {
-    message:  ['"We start with one process, not everything."', 'Frame digital as operational relief, not strategic transformation.', 'Speak in time saved and errors reduced — not in technology terms.'],
-    channels: ['Sector workshops where digital is framed as a practical tool.', 'Accountant or bank introductions when digitisation is a condition.'],
-    offer:    ['Digital quick-win sprint — one process, 3 weeks, measurable output.', 'Diagnostic: "where does digital help most?"', 'Clinic — show, don\'t tell.'],
-    proof:    ['Demo of the output — not the technology.', '"This saved [firm] 4 hours per week."', 'Sector peer who has done it and can speak to it.'],
+  standardized: {
+    message:  ['No step-by-step frameworks in proposals — ever.', 'Describe outcomes in the specific operational language of their sector.', '"This is what we would do for you" — not "this is our standard process".'],
+    channels: ['Face-to-face first — standardisation is harder to detect in person.', 'Plain-language follow-up that shows the proposal was written for this firm.', 'Peer roundtables: sector peers notice generic pitches immediately.'],
+    offer:    ['Bespoke scoping call before any document is shared.', 'Show previous work that was visibly tailored, not templated.', 'Two-page max proposal: if it looks like a brochure, it is rejected.'],
+    proof:    ['Anonymised case where the engagement was shaped around the firm, not the methodology.', 'Let an existing client explain how the approach was adapted.', 'Avoid bullet-pointed methodology lists — use narrative.'],
+  },
+  isolation: {
+    message:  ['Acknowledge that Greek SMEs are underserved relative to their share of the economy.', 'Position as a firm that specifically chose to focus on SMEs — not one that tolerates them.', '"You shouldn\'t have to navigate this alone."'],
+    channels: ['Peer gatherings — the antidote to isolation is community.', 'Sector associations that actively represent SME interests.', 'Events where SME decision-makers can share problems and compare approaches.'],
+    offer:    ['Workshop or roundtable: 3–5 SMEs, same sector, shared challenges.', 'Group advisory model: shared cost, shared context.', 'Annual sector gathering where firms exchange practices.'],
+    proof:    ['Evidence that the firm has prioritised SMEs, not just serviced them.', 'Testimonials from other SMEs who felt heard and supported.', 'Visible sector commitment — number of SMEs served, by sector.'],
+  },
+  esg: {
+    message:  ['Lead with the regulatory requirement, not the sustainability narrative.', 'Translate ESG into operational consequence: loan approval, Golden Visa clients, procurement bids.', 'Acknowledge the compliance burden — don\'t add to it.'],
+    channels: ['Banking and lending ecosystem — ESG requirements originate here.', 'Bar Association and legal newsletters for the legal sector.', 'Ministry communications and government portals.'],
+    offer:    ['ESG readiness check: fixed scope, 2-week turnaround.', 'Sector-specific briefing: what this regulation means for your type of firm.', 'Specialist ESG advisory for firms with international clients or loan conditions.'],
+    proof:    ['Plain-language regulation summary in operational context.', 'Checklist of what is required before a deadline.', '"We have helped hotel groups meet bank ESG conditions for credit approval."'],
+  },
+  channels: {
+    message:  ['Be present at the events SMEs attend — not the ones large firms sponsor.', 'Legal sector only: be visible in legal databases, Bar Association, and professional newsletters.', 'Social media is relevant only in HoReCa — not in construction, legal, or traditional retail.'],
+    channels: ['Trade exhibitions (HoReCa, sector fairs) for 4 of 5 sectors.', 'Legal databases, Bar Association, law firm peer networks for legal sector.', 'Ministry communications and government portals for regulated sectors.'],
+    offer:    ['Exhibition presence with a sector-specific talking point — not a company stand.', 'Peer event co-hosted with a sector association.', 'Legal sector: written content in association channels and newsletters.'],
+    proof:    ['Visibility at the right events before any outreach.', 'Association endorsement or co-hosting credit.', 'Published content in the channel where the sector actually reads.'],
+  },
+  'b-notforus': {
+    message:  ['Never lead with firm scale or global reach when speaking to SMEs.', 'Open with the sector, not the firm — let relevance come first.', '"We work with firms like yours" is more powerful than any brand credential.'],
+    channels: ['All outreach through trusted intermediaries — cold contact reinforces the barrier.', 'Peer referrals are the only reliable bridge past this perception.', 'Sector events where scale is invisible.'],
+    offer:    ['Fixed-fee, bounded entry that removes open-ended scale risk.', 'Peer clinic — same-size firms, shared context.', '"Try us for one engagement — no ongoing obligation."'],
+    proof:    ['Named SME clients in the same sector and size band.', 'Evidence from a boutique firm or family business — not a corporate.', 'One-pager: what engagement with a firm like yours actually looks like.'],
+  },
+  'b-confidential': {
+    message:  ['Address confidentiality constraints explicitly in the first conversation.', 'Describe how you handle sensitive client data before being asked.', 'Small team, high-value clients = confidentiality is structural, not a preference.'],
+    channels: ['Only through the firm\'s trusted network — legal sector does not respond to cold outreach.', 'Bar Association and law firm peer networks.', 'Private, one-to-one format only — no group events for initial engagement.'],
+    offer:    ['One-to-one engagement with a named advisor, not a team.', 'Explicit data handling protocol as part of the proposal.', 'Scoped advisory on a single area — not broad engagement.'],
+    proof:    ['Demonstrated experience with confidentiality-sensitive sectors.', 'Reference from a comparable boutique professional services firm.', 'Your own data handling and ethics standards visible before being asked.'],
+  },
+  'b-salesfear': {
+    message:  ['State explicitly what is NOT included and what does NOT follow the engagement.', 'No upselling language in any materials.', '"This is a bounded engagement — there is no next step unless you want one."'],
+    channels: ['Peer referrals reduce fear before contact — the referrer sets expectations.', 'Sector association context: advisory as a service, not a sales call.', 'Written format with a clear scope removes ambiguity.'],
+    offer:    ['Fixed-fee, fixed-scope, fixed-duration — all three stated upfront.', 'No open-ended retainer in an initial engagement.', '"Done in 2 weeks. One deliverable. You own it. No follow-up obligation."'],
+    proof:    ['Former clients who can describe the end of the engagement, not just the start.', 'Explicit "what happens at the end" section in the proposal.', 'Simple two-page proposal — not a 30-page sales document.'],
+  },
+  't-bank': {
+    message:  ['Bank requirement is a mandate, not an opportunity — respect the urgency.', 'Translate the bank\'s requirement into practical terms the SME can act on.', 'Don\'t expand the scope beyond what the bank asked for.'],
+    channels: ['Bank ecosystem introductions — the bank is the trigger and the referrer.', 'Loan advisor or financial intermediary network.', 'SME banking events and financial services associations.'],
+    offer:    ['ESG readiness report: exactly what the bank needs, nothing more.', 'Fixed scope, fast turnaround — bank deadlines are real.', 'Done-for-you documentation: minimum burden on the SME.'],
+    proof:    ['"We have helped hotel groups meet bank ESG conditions for credit approval."', 'Sample output that matches the bank\'s reporting format.', 'Timeline from intro to deliverable: under 2 weeks.'],
+  },
+  't-reg': {
+    message:  ['Regulatory change is the entry point — don\'t miss the moment.', 'Translate the regulation into 3 operational implications, not a legal overview.', 'Acknowledge that SMEs are overwhelmed by the volume of new requirements.'],
+    channels: ['Ministry announcements and government portals (hospitality, construction).', 'Bar Association, legal databases, Golden Visa specialist networks.', 'Accountant and tax advisor ecosystem — they are the first call.'],
+    offer:    ['Compliance readiness check: fixed scope, specific regulation, fast turnaround.', 'Sector briefing: what this means for your firm specifically.', 'Group workshop: 5 SMEs, same regulation, shared cost.'],
+    proof:    ['"Already applied this for firms in your sector before the deadline."', 'Checklist of requirements — concrete and sector-specific.', 'Plain-language summary of the regulation and its impact.'],
+  },
+  't-events': {
+    message:  ['Lead with sector knowledge at events — not firm credentials.', 'A sector-specific talking point is more valuable than a stand or banner.', 'Be present where the sector is — not where it thinks it should be seen.'],
+    channels: ['HoReCa, EcoFestival, HOST (Italy) for coffee and hospitality sectors.', 'Wine and beverage sector exhibitions for retail.', 'Construction trade fairs for equipment and materials.'],
+    offer:    ['Event presence with a sector briefing — not a sales pitch.', 'Invite existing clients to events as advocates.', 'Association co-hosting of a sector event.'],
+    proof:    ['Visible sector expertise at the event before any follow-up.', 'Association endorsement as event partner.', 'SME participants who already know the firm.'],
+  },
+  'p-peer': {
+    message:  ['The referrer is the message — centre them, not the firm.', 'Quote peer endorsements in sector-specific language, not corporate language.', '"A firm in your sector has used us and recommends us" — this opens doors.'],
+    channels: ['The peer\'s network is the channel — not social media, not email.', 'Sector roundtables where peers recommend directly.', 'Law firm networks for the legal sector specifically.'],
+    offer:    ['Let existing clients invite contacts — peer-to-peer referral event.', 'Association-endorsed peer testimonial programme.', 'Named SME reference call as part of the proposal process.'],
+    proof:    ['The peer endorser is the proof — their relationship is the evidence.', 'Named testimonials within the same sector circle.', 'Track record of peer-referral-led engagements.'],
+  },
+  'p-track': {
+    message:  ['"We have worked with a firm exactly like yours" — say it specifically.', 'Name what you did, the firm type, and the sector — no generics.', 'Let the former client speak for themselves if possible.'],
+    channels: ['Former client testimonials visible at the point where trust needs to be earned.', 'Case examples available at sector events and association channels.', 'Direct reference calls with comparable clients.'],
+    offer:    ['Reference call with a former client in the same sector.', 'One-page case summary: firm type, challenge, outcome.', 'Before-and-after framing: what changed after the engagement.'],
+    proof:    ['The track record IS the proof — specificity and comparability matter.', 'Sector and size of former clients disclosed where possible.', '"We have helped hotel groups / law firms in Greece with exactly this."'],
+  },
+  'p-results': {
+    message:  ['State the outcome on line 1 — not the methodology.', 'Quantify wherever possible: time saved, cost impact, compliance met.', '"What changes for you in 4 weeks" beats "our approach to advisory".'],
+    channels: ['Results-first messaging in every sector event and association channel.', 'Short case example in the first follow-up — not a full case study.', 'Direct conversation: "here\'s what we achieved for a firm like yours."'],
+    offer:    ['Performance-based framing: outcome agreed upfront, results measured.', 'Short pilot: agree the outcome, deliver in 4 weeks, gate on results.', 'Concrete deliverable preview: show the output before asking for commitment.'],
+    proof:    ['Named outcome from a comparable firm.', '"From the moment you deliver results, cost comes second." — this is the SME logic.', 'Before-and-after documentation: what the firm had, what it has now.'],
+  },
+  'p-sector': {
+    message:  ['Demonstrate sector knowledge before presenting credentials.', 'Name-drop sector-specific regulations, events, and vocabulary.', 'Show you know their typical cost structure and operating pressures.'],
+    channels: ['Sector publications and trade press.', 'Trade exhibitions and association events.', 'Legal sector: Bar Association publications and legal newsletters.'],
+    offer:    ['Sector diagnostic benchmarked against peers.', 'Sector-specific briefing as a free introductory offer.', 'Sector micro-case: one-page story from the same type of firm.'],
+    proof:    ['Sector expertise demonstrated before the engagement begins.', 'Sector benchmarking data as a deliverable.', 'Named sector experience: number of firms, same industry.'],
   },
 };
 
 // Conversational synonyms layered on top of node synonyms — maps emotional/question language to node ids
 const INTENT_MAP = [
-  { id: 'compfat',   terms: ['scared', 'afraid', 'fear', 'overwhelm', 'stress', 'anxious', 'anxiety', 'worried about regulation', 'too many rules', 'keep up', 'can\'t keep up', 'too much', 'new regulation', 'new law', 'new rules'] },
-  { id: 'trust',     terms: ['trust you', 'do i trust', 'can i trust', 'skeptical', 'sceptical', 'doubt', 'suspicious', 'believe you', 'credible', 'rely on'] },
-  { id: 'cost',      terms: ['too expensive', 'afford', 'worth it', 'pay for', 'how much', 'pricing', 'worried about cost', 'budget', 'roi', 'return'] },
-  { id: 'jargon',    terms: ['confused', 'don\'t understand', 'don\'t know what', 'what does', 'what is', 'unclear', 'lost', 'complex language', 'plain english', 'plain language', 'what do you mean'] },
-  { id: 'b-salesfear', terms: ['being sold', 'sales pitch', 'hard sell', 'committed', 'locked in', 'pushy', 'pitch me', 'don\'t want to be sold', 'obligation', 'no obligation'] },
-  { id: 'referrals', terms: ['how did you find', 'who recommended', 'word of mouth', 'introduced by', 'heard about', 'find an advisor', 'how to choose'] },
-  { id: 'speed',     terms: ['how long', 'how fast', 'quick', 'takes too long', 'too slow', 'timeline', 'how many weeks', 'months'] },
-  { id: 't-reg',     terms: ['new law', 'new legislation', 'mydata', 'esg reporting', 'cbam', 'ai act', 'csrd', 'omnibus', 'compliance deadline', 'regulation coming'] },
-  { id: 'digital',   terms: ['go digital', 'digitise', 'digitize', 'start digital', 'technology', 'software', 'online', 'automate', 'where to start with digital'] },
-  { id: 'sectorfit', terms: ['understand my sector', 'understand my business', 'worked with', 'experience in', 'hospitality', 'tourism', 'retail', 'manufacturing', 'my industry'] },
+  { id: 'esg',            terms: ['scared', 'afraid', 'fear', 'overwhelm', 'stress', 'anxious', 'worried about regulation', 'too many rules', 'keep up', 'can\'t keep up', 'new regulation', 'new law', 'new rules', 'esg', 'sustainability', 'green'] },
+  { id: 'trust',          terms: ['trust you', 'do i trust', 'can i trust', 'skeptical', 'sceptical', 'doubt', 'suspicious', 'credible', 'rely on', 'communication', 'personal fit'] },
+  { id: 'familyculture',  terms: ['family business', 'family firm', 'team culture', 'small team', 'understand us', 'different from big firms', 'not corporate', 'family owned'] },
+  { id: 'standardized',   terms: ['brochure', 'template', 'generic', 'standardized', 'one size fits all', 'not personalised', 'not personalized', 'methodology', 'framework', 'steps'] },
+  { id: 'isolation',      terms: ['alone', 'on our own', 'underserved', 'ignored', 'not supported', 'feel alone', 'no support', 'left out'] },
+  { id: 'b-salesfear',    terms: ['being sold', 'sales pitch', 'hard sell', 'committed', 'locked in', 'pushy', 'pitch me', 'don\'t want to be sold', 'obligation', 'open-ended'] },
+  { id: 'referrals',      terms: ['how did you find', 'who recommended', 'word of mouth', 'introduced by', 'heard about', 'find an advisor', 'how to choose', 'personal connection'] },
+  { id: 'channels',       terms: ['exhibition', 'trade fair', 'sector event', 'bar association', 'legal database', 'legal magazine', 'how to reach', 'how to find', 'where to look'] },
+  { id: 'b-confidential', terms: ['confidential', 'confidentiality', 'sensitive', 'private clients', 'data security', 'discretion', 'keep it private', 'sensitive information'] },
+  { id: 't-reg',          terms: ['new law', 'new legislation', 'esg reporting', 'cbam', 'ai act', 'csrd', 'compliance deadline', 'regulation coming', 'golden visa', 'public procurement'] },
+  { id: 'sectorfit',      terms: ['understand my sector', 'understand my business', 'worked with', 'experience in', 'hospitality', 'legal', 'hotel', 'construction', 'retail', 'coffee', 'my industry', 'my sector'] },
 ];
 
 // Strip common question-framing words before matching
@@ -431,11 +511,12 @@ const Sankey = ({ sel, onSel }) => {
   const cols = [lay(barriers, colX[0]), lay(themes, colX[1]), lay(triggers, colX[2]), lay(proofs, colX[3])];
   const by = Object.fromEntries(cols.flat().map(n => [n.id, n]));
   const flows = [
-    ['b-expensive','cost',11], ['cost','p-scope',10],
-    ['b-salesfear','trust',6], ['trust','p-peer',14], ['trust','p-pilot',8],
-    ['b-notforus','sectorfit',4], ['sectorfit','p-sector',8],
-    ['compfat','t-reg',9], ['t-reg','p-scope',5],
-    ['compfat','t-bank',7], ['t-bank','p-pilot',4],
+    ['b-notforus','sectorfit',6],    ['b-salesfear','trust',5],       ['b-confidential','referrals',4],
+    ['trust','p-peer',12],           ['trust','p-track',7],
+    ['referrals','p-peer',11],       ['sectorfit','p-sector',7],
+    ['standardized','b-notforus',6],
+    ['t-reg','p-sector',4],          ['t-reg','trust',5],
+    ['t-bank','p-results',4],
   ];
   return (
     <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid meet">
@@ -581,11 +662,11 @@ const BrainView = ({ state }) => {
             <h3 className="h3" style={{ margin: '8px 0 16px' }}>Top co-occurrences.</h3>
             <ul style={{ margin: 0, padding: 0, listStyle: 'none', fontSize: 14 }}>
               {[
-                ['Trust ↔ Referrals', 18],
-                ['Trust ↔ Peer endorsement', 14],
-                ['Referrals ↔ Peer endorsement', 12],
-                ['Cost ↔ "Too expensive"', 11],
-                ['Compliance fatigue ↔ Regulation', 9],
+                ['Communication fit ↔ Personal referral', 18],
+                ['Communication fit ↔ Peer endorsement', 12],
+                ['Personal referral ↔ Peer endorsement', 11],
+                ['Sector fit ↔ Template rejection', 9],
+                ['ESG spectrum ↔ Regulatory change', 8],
               ].map(([l, n]) => (
                 <li key={l} style={{ padding: '12px 0', borderTop: '1px solid var(--hairline-soft)', display: 'flex', justifyContent: 'space-between' }}>
                   <span style={{ color: 'var(--ink)' }}>{l}</span>
@@ -599,10 +680,10 @@ const BrainView = ({ state }) => {
             <h3 className="h3" style={{ margin: '8px 0 16px' }}>By mindset.</h3>
             <ul style={{ margin: 0, padding: 0, listStyle: 'none', fontSize: 14 }}>
               {[
-                ['Cost-pressured pragmatists', 6],
-                ['Growth, bandwidth-limited', 4],
-                ['Compliance / bank-driven', 5],
-                ['Digitally curious, unsure', 3],
+                ['Relationship-only engagers', 4],
+                ['Compliance-triggered (bank / reg)', 2],
+                ['Consultation-naive (no prior advisory)', 2],
+                ['Confidentiality-constrained', 1],
               ].map(([l, n]) => (
                 <li key={l} style={{ padding: '12px 0', borderTop: '1px solid var(--hairline-soft)', display: 'flex', justifyContent: 'space-between' }}>
                   <span style={{ color: 'var(--ink)' }}>{l}</span>
@@ -615,10 +696,10 @@ const BrainView = ({ state }) => {
             <span className="eyebrow">Method</span>
             <h3 className="h3" style={{ margin: '8px 0 16px' }}>How the graph is built.</h3>
             <p className="body" style={{ marginBottom: 16 }}>
-              Nodes from the interview codebook. Edges from co-occurrence within the same answer unit. All quotes are anonymised. Node size = theme frequency; edge weight = co-occurrence count.
+              Nodes coded from 5 semi-structured interviews with Greek SME decision-makers across hospitality, legal services, HoReCa, construction, and beverage retail (April 2026). Edges from co-occurrence within the same answer unit.
             </p>
             <p className="body">
-              Transcripts from 5 semi-structured interviews with Greek SME owners and managers across Tourism, Retail, Manufacturing, and Services.
+              All quotes anonymised to sector and firm type. Node size reflects theme frequency; edge weight reflects co-occurrence count. Primary data only — no external sources used.
             </p>
           </div>
         </div>
